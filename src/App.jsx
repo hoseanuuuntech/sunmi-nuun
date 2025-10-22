@@ -1,40 +1,52 @@
 import React, { useState } from "react";
-import Sunmi from "sunmi-js-sdk";
 
 const PrintReceipt = () => {
   const [status, setStatus] = useState("Idle");
 
-  const handlePrint = async () => {
+  const handlePrint = () => {
     try {
-      setStatus("Menghubungkan printer...");
-      await Sunmi.launchPrinterService(); // Inisialisasi printer
+      setStatus("Menyiapkan struk...");
 
-      setStatus("Mencetak...");
+      // Buat konten struk
+      const printContent = `
+        <div style="font-family: monospace; padding: 20px;">
+          <h2 style="text-align: center;">=== STRUK PEMBAYARAN ===</h2>
+          <p>Tanggal: ${new Date().toLocaleString()}</p>
+          <hr/>
+          <pre>
+Item          Qty   Harga
+Kopi Hitam     1    Rp10.000
+Roti Bakar     2    Rp24.000
+          </pre>
+          <hr/>
+          <p><b>Total: Rp34.000</b></p>
+          <div style="text-align:center; margin-top:20px;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?data=https://sunmi.com&size=100x100" alt="QR Code"/>
+          </div>
+          <p style="text-align:center; margin-top:10px;">Terima kasih!</p>
+        </div>
+      `;
 
-      // Contoh struk sederhana
-      await Sunmi.printText("=== STRUK PEMBAYARAN ===\n");
-      await Sunmi.printText("Tanggal: " + new Date().toLocaleString() + "\n");
-      await Sunmi.printText("-----------------------------\n");
-      await Sunmi.printText("Item        Qty   Harga\n");
-      await Sunmi.printText("Kopi Hitam   1   Rp10.000\n");
-      await Sunmi.printText("Roti Bakar   2   Rp24.000\n");
-      await Sunmi.printText("-----------------------------\n");
-      await Sunmi.printText("Total: Rp34.000\n\n");
+      // Buka jendela baru untuk print
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
 
-      // Print QR Code
-      await Sunmi.printQr("https://sunmi.com", { align: "center" });
-      await Sunmi.lineWrap(3);
+      // Panggil fungsi print
+      printWindow.print();
+      printWindow.close();
 
       setStatus("Selesai mencetak ✅");
     } catch (error) {
       console.error(error);
-      setStatus("Gagal mencetak ❌"+error);
+      setStatus("Gagal mencetak ❌ " + error);
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center p-6 gap-4">
-      <h2 className="text-lg font-semibold">Sunmi Printer Demo</h2>
+      <h2 className="text-lg font-semibold">Web Print Demo</h2>
       <button
         onClick={handlePrint}
         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
