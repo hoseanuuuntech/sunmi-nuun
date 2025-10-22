@@ -28,7 +28,7 @@ const PrintReceipt = () => {
       setStatus("Selesai mencetak ✅");
     } catch (error) {
       console.error(error);
-      setStatus("Gagal mencetak ❌");
+      setStatus("Gagal mencetak ❌"+error);
     }
   };
 
